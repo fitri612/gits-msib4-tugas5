@@ -10,19 +10,23 @@ class ProductController extends Controller
 {
     public function index()
     {
-        // $products = Products::with('categories')->get();
-        // $categories = Categories::all();
-    
-        // return view('pages.product.index', compact('products', 'categories'));
-        $products = Products::with('categories')->get();
 
-        return view('pages.product.index', ['products' => $products]);
+        $data['products'] = Products::with('categories')->get();
+        // $products = Products::with('categories')->get();
+        // dd($products)->toArray();
+        // $categories = Categories::all();
+
+        // return view('pages.product.index', compact('products', 'categories'));
+        dd($data['products']->toArray());
+        return view('pages.product.index', $data);
     }
 
     public function create()
     {
-        $categories = Categories::all();
-        return view('pages.product.create', compact('categories'));
+        // $categories = Categories::all();
+        // return view('pages.product.create', compact('categories'));
+        $data['categories'] = Categories::all();
+        return view('pages.product.create', $data);
     }
 
     public function store(Request $request)
