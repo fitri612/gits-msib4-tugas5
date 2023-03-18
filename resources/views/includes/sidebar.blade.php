@@ -6,21 +6,18 @@
                  <li class="active">
                      <a href="index.html"><i class="menu-icon fa fa-laptop"></i>Dashboard </a>
                  </li>
-                 <li class="menu-title">Barang</li><!-- /.menu-title -->
-                 <li class="">
-                     <a href="#"> <i class="menu-icon fa fa-list"></i>Lihat Barang</a>
-                 </li>
-                 <li class="">
-                     <a href="#"> <i class="menu-icon fa fa-plus"></i>Tambah Barang</a>
-                 </li>
+                 <li class="menu-title">Category</li><!-- /.menu-title -->
+                 <li>
+                    <a href="{{ route('category.index') }}"> <i class="menu-icon fa fa-list"></i>Lihat Category</a>
+                </li>
+                 {{-- <li class="">
+                     <a href="{{ route('category.create') }}"> <i class="menu-icon fa fa-plus"></i>Tambah Category</a>
+                 </li> --}}
 
-                 <li class="menu-title">Foto Barang</li><!-- /.menu-title -->
-                 <li class="">
-                     <a href="#"> <i class="menu-icon fa fa-list"></i>Lihat Foto Barang</a>
-                 </li>
-                 <li class="">
-                     <a href="#"> <i class="menu-icon fa fa-plus"></i>Tambah Foto Barang</a>
-                 </li>
+                 <li class="menu-title">Products</li><!-- /.menu-title -->
+                 <li>
+                    <a href="{{ route('product.index') }}"> <i class="menu-icon fa fa-list"></i>Lihat Products</a>
+                </li>
 
                  <li class="menu-title">Transaksi</li><!-- /.menu-title -->
                  <li class="">
