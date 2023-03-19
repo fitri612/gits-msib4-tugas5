@@ -33,7 +33,8 @@
                             <td>{{ $category->id }}</td>
                             <td>{{ $category->name }}</td>
                             <td>
-                                <a href="" class="btn btn-primary">Edit</a>
+                                <button type="button" class="btn btn-primary" data-toggle="modal"
+                    data-target="#editCategoryModal{{ $category->id }}">Edit</button>
                                 <form action="{{ route('category.destroy', $category->id) }}" method="POST"
                                     class="d-inline">
                                     @csrf
@@ -77,4 +78,38 @@
             </div>
         </div>
     </div>
+
+    <!-- Edit Category Modal -->
+    @foreach ($categories as $category)
+    <div class="modal fade" id="editCategoryModal{{ $category->id }}" aria-labelledby="editCategoryModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editCategoryModalLabel">Edit Category</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form method="POST" action="{{ route('category.update', ['category' => $category->id]) }}">
+                        @csrf
+                        @method('PUT')
+                        <div class="form-group">
+                            <label for="name">Category Name</label>
+                            <input type="text" class="form-control @error('name') is-invalid @enderror" id="name"
+                                name="name" value="{{ $category->name }}" required>
+                            @error('name')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
+                        </div>
+                        <button type="submit" class="btn btn-primary">Update Category</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endforeach
 @endsection

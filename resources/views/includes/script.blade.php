@@ -268,4 +268,5 @@
             });
             // Bar Chart #flotBarChart End
         });
+
     </script>

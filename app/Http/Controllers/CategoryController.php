@@ -26,6 +26,25 @@ class CategoryController extends Controller
         ]);
 
         return redirect()->back()->with('success', 'Category added successfully!');
+        
+    }
+
+    public function edit(Categories $category)
+    {
+        return view('pages.category.index', compact('category'));
+    }
+
+    public function update(Request $request, Categories $category)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
+
+        $category->update([
+            'name' => $request->name,
+        ]);
+
+        return redirect()->route('category.index')->with('success', 'Category updated successfully!');
     }
 
     public function destroy(Categories $category)

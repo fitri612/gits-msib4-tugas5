@@ -10,31 +10,20 @@
                         <h4 class="card-title">Input to Cart</h4>
                     </div>
                     <div class="card-body">
-                        <form action="" method="post">
+                        <form action="{{ route('cart.addToCart') }}" method="post">
                             @csrf
-                            <div class="form-group">
-                                <label for="category">Category</label>
-                                <select class="form-control" name="category_id" id="category_id">
-                                    <option value="">Select Category</option>
-                                    @foreach($categories as $category)
-                                    <option value="{{ $category->id }}">{{ $category->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
                             <div class="form-group">
                                 <label for="product">Product</label>
                                 <select class="form-control" name="product_id" id="product_id">
                                     <option value="">Select Product</option>
-                                    @if(isset($products))
-                                    @foreach($products as $product)
-                                    <option value="{{ $product->id }}">{{ $product->name }}</option>
+                                    @foreach ($products as $product)
+                                        <option value="{{ $product->id }}">{{ $product->name }}</option>
                                     @endforeach
-                                    @endif
                                 </select>
                             </div>
                             <div class="form-group">
                                 <label for="quantity">Quantity</label>
-                                <input type="number" class="form-control" id="quantity" name="quantity" required>
+                                <input type="number" class="form-control" id="quantity" name="qty" required>
                             </div>
                             <button type="submit" class="btn btn-primary">Add to Cart</button>
                         </form>
@@ -72,64 +61,111 @@
                                     <th>Action</th>
                                 </thead>
                                 <tbody>
-                                   
+                                    @php
+                                        $total = 0;
+                                    @endphp
+
+                                    @foreach ($carts as $cart)
+                                        <tr>
+                                            <td>{{ $loop->iteration }}</td>
+                                            <td>{{ $cart->product->name }}</td>
+                                            <td>Rp. {{ number_format($cart->product->price) }}</td>
+                                            <td>{{ $cart->qty }}</td>
+                                            <td>Rp. {{ number_format($cart->product->price * $cart->qty) }}</td>
+
+                                            <td>
+                                                <button class="btn btn-primary btn-sm" data-toggle="modal"
+                                                    style="margin-bottom: 5px;"
+                                                    data-target="#editCartModal-{{ $cart->id }}">Edit</button>
+
+                                                <form action="{{ route('cart.destroy', $cart->id) }}" method="post">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button class="btn btn-danger btn-sm">Delete</button>
+
+                                                </form>
+                                            </td>
+
+                                        </tr>
+                                        @php
+                                            $total += $cart->product->price * $cart->qty;
+                                        @endphp
+                                    @endforeach
+
 
                                     <tr>
                                         <td colspan="4" rowspan="4"></td>
                                         <td>Grand Total </td>
-                                        <td>: </td>
+                                        <td>: Rp. {{ number_format($total) }}</td>
                                     </tr>
-                                    <form action="" method="post">
+                                    <form action="{{ route('cart.checkout') }}" method="post">
                                         @csrf
                                         <tr>
                                             <td></td>
                                             <td>
                                                 <input type="number" class="form-control" id="cash" name="cash"
-                                                    placeholder="Cash" required>
+                                                    value="" placeholder="Cash" required>
                                             </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Change </td>
-                                            <td>: Rp. </td>
                                         </tr>
                                         <tr>
                                             <td></td>
                                             <td>
-                                                <button class="btn btn-primary btn-sm col-12">Checkout / Paid</button>
+                                                <button class="btn btn-primary btn-sm col-12" type="submit"
+                                                    onclick="return confirm('Are you sure you want to checkout?')">Checkout
+                                                    / Paid</button>
                                             </td>
                                         </tr>
+                                        <input type="hidden" name="total" value="{{ $total }}">
                                     </form>
                                 </tbody>
                             </table>
                         </div>
                     </div>
                 </div>
+
+                @foreach ($carts as $cart)
+                    <!-- Edit Cart Modal -->
+                    <div class="modal fade" id="editCartModal-{{ $cart->id }}" tabindex="-1" role="dialog"
+                        aria-labelledby="editCartModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="editCartModalLabel">Edit Cart</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <form action="{{ route('cart.update', $cart->id) }}" method="post">
+                                    @csrf
+                                    @method('PUT')
+                                    <div class="modal-body">
+                                        <div class="form-group">
+                                            <label for="product_id">Product Name</label>
+                                            <select class="form-control" id="product_id" name="product_id" required>
+                                                @foreach ($products as $product)
+                                                    <option value="{{ $product->id }}"
+                                                        {{ $cart->product_id == $product->id ? 'selected' : '' }}>
+                                                        {{ $product->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="qty">Quantity</label>
+                                            <input type="number" class="form-control" id="qty" name="qty"
+                                                value="{{ $cart->qty }}" required>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        <button type="submit" class="btn btn-primary">Save changes</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End Edit Cart Modal -->
+                @endforeach
             </div>
         </div>
     </div>
-
-
 @endsection
-@push('script')
-$('#category_id').on('change', function() {
-    var category_id = $(this).val();
-    if (category_id) {
-        $.ajax({
-            url: '/products/' + category_id,
-            type: "GET",
-            dataType: "json",
-            success: function(data) {
-                $('#product_id').empty();
-                $('#product_id').append('<option value="">Select Product</option>');
-                $.each(data, function(key, value) {
-                    $('#product_id').append('<option value="' + key + '">' + value +
-                        '</option>');
-                });
-            }
-        });
-    } else {
-        $('#product_id').empty();
-        $('#product_id').append('<option value="">Select Product</option>');
-    }
-});
-@endpush

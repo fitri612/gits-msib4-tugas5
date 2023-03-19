@@ -62,7 +62,7 @@ class ProductController extends Controller
             'category_id' => $request->category_id,
         ]);
 
-        return redirect()->back()->with('success', 'Product updated successfully!');
+        return redirect()->route('product.index')->with('success', 'Product updated successfully!');
     }
 
     public function destroy(Products $product)

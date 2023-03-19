@@ -12,47 +12,88 @@ class TransactionController extends Controller
     public function index(Request $request)
     {
         $categories = Categories::all();
-        $products = null;
-    
-        if ($request->has('category_id')) {
-            $category_id = $request->input('category_id');
-            $products = Products::where('category_id', $category_id)->get();
-        }
-    
-        return view('pages.cart.index', compact('categories', 'products'));
+        $carts = Carts::with('product')->get();
+        $products = Products::with('category')->get();
+
+        return view('pages.cart.index', compact('categories', 'products', 'carts'));
     }
 
     public function addToCart(Request $request)
     {
         $request->validate([
-            'product_id' => 'required|exists:products,id',
-            'quantity' => 'required|integer|min:1',
+            'product_id' => 'required',
+            'qty' => 'required|numeric',
         ]);
 
+        $data = $request->all();
+
+        // Calculating Qty if Cart Exists
+        $cart = Carts::where('product_id', $request->product_id)->first();
+        $cart ? $data['qty'] += $cart->qty : $data['qty'];
+
+
+        // Check Product Stock
         $product = Products::findOrFail($request->product_id);
-
-        // Check if the product is already in the cart
-        $cartItem = Carts::where('product_id', $product->id)->first();
-
-        if ($cartItem) {
-            // If the product is already in the cart, update the quantity
-            $cartItem->update([
-                'qty' => $cartItem->qty + $request->quantity,
-            ]);
-        } else {
-            // If the product is not in the cart, add it
-            Carts::create([
-                'product_id' => $product->id,
-                'qty' => $request->quantity,
-            ]);
+        if ($product->stock < $data['qty']) {
+            return redirect()->back()->with('error', 'Out of stock product');
         }
 
-        return redirect()->back()->with('success', 'Product added to cart!');
+        Carts::updateOrCreate([
+            'product_id' => $request->product_id,
+        ], $data);
+
+        return redirect()->back()->with('success', 'Product Added to Cart!');
+    }
+    
+    public function editCart(Carts $cart)
+    {
+        $categories = Categories::all();
+        $products = Products::all();
+        return view('pages.cart.edit', compact('categories', 'products', 'cart'));
     }
 
-    public function removeFromCart(Carts $cartItem)
+    public function updateCart(Request $request, Carts $cart)
     {
-        $cartItem->delete();
+        $request->validate([
+            'product_id' => 'required',
+            'qty' => 'required|numeric',
+        ]);
+
+        $data = $request->all();
+
+        // Check Product Stock
+        $product = Products::findOrFail($request->product_id);
+        if ($product->stock < $data['qty']) {
+            return redirect()->back()->with('error', 'Out of stock product');
+        }
+
+        $cart->update($data);
+
+        return redirect()->route('cart.index')->with('success', 'Cart updated successfully.');
+    }
+
+    public function checkout(Request $request)
+    {
+        $total = $request->input('total');
+        $cash = $request->input('cash');
+        $change = $cash - $total;
+
+        if ($change < 0) {
+            return redirect()->back()->with('error', 'Invalid cash amount.');
+        }
+
+        // Lakukan proses checkout / pembayaran di sini
+        // Contoh: simpan transaksi ke database, kurangi stok barang, dsb.
+        // Kosongkan keranjang belanja
+
+        Carts::truncate();
+
+        return redirect()->route('cart.index')->with('success', 'Transaction successful. Change: Rp. ' . number_format($change));
+    }
+
+    public function removeFromCart(Carts $cart)
+    {
+        $cart->delete();
 
         return redirect()->back()->with('success', 'Product removed from cart!');
     }

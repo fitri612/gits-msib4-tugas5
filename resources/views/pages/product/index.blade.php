@@ -32,6 +32,7 @@
                                     <th>Name</th>
                                     <th>Price</th>
                                     <th>Stock</th>
+                                    <th>Deskripsi</th>
                                     <th>Category</th>
                                     <th>Action</th>
                                 </thead>
@@ -42,10 +43,13 @@
                                             <td>{{ $product->name }}</td>
                                             <td>{{ $product->price }}</td>
                                             <td>{{ $product->stock }}</td>
+                                            <td>{{ $product->description }}</td>
                                             <td>{{ $product->category->name }}</td>
 
                                             <td>
-                                                <a href="" class="btn btn-primary">Edit</a>
+                                                {{-- <a href="" class="btn btn-primary">Edit</a> --}}
+                                                <button type="button" class="btn btn-primary" data-toggle="modal"
+                                                    data-target="#editProductModal{{ $product->id }}">Edit</button>
                                                 <form action="{{ route('product.destroy', $product->id) }}" method="post"
                                                     style="display: inline-block;">
                                                     @csrf
@@ -112,6 +116,86 @@
                 </div>
             </div>
         </div>
+
+        {{-- Edit product Model --}}
+        @foreach ($products as $product)
+            <div class="modal fade" id="editProductModal{{ $product->id }}" aria-labelledby="editProductModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="editProductModalLabel">Edit Product</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form method="POST" action="{{ route('product.update', ['product' => $product->id]) }}">
+                                @csrf
+                                @method('PUT')
+                                <div class="form-group">
+                                    <label for="name">Product Name</label>
+                                    <input type="text" class="form-control @error('name') is-invalid @enderror"
+                                        id="name" name="name" value="{{ $product->name }}" required>
+                                    @error('name')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                    @enderror
+                                </div>
+                                <div class="form-group">
+                                    <label for="price">Price</label>
+                                    <input type="number" class="form-control @error('price') is-invalid @enderror"
+                                        id="price" name="price" value="{{ $product->price }}" required>
+                                    @error('price')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                    @enderror
+                                </div>
+                                {{-- stock --}}
+                                <div class="form-group">
+                                    <label for="stock">Stock</label>
+                                    <input type="number" class="form-control @error('stock') is-invalid @enderror"
+                                        id="stock" name="stock" value="{{ $product->stock }}" required>
+                                    @error('stock')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                    @enderror
+                                </div>
+                                {{-- description --}}
+                                <div class="form-group">
+                                    <label for="description">Description</label>
+                                    <textarea class="form-control @error('description') is-invalid @enderror" id="description" name="description"
+                                        rows="3" required>{{ $product->description }}</textarea>
+                                    @error('description')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                    @enderror
+                                </div>
+                                {{-- category --}}
+                                <div class="form-group">
+                                    <label for="category">Category</label>
+                                    <select class="form-control" name="category_id">
+                                        <option value="">Select Category</option>
+                                        @foreach ($categories as $category)
+                                            <option value="{{ $category->id }}"
+                                                {{ $product->category_id == $category->id ? 'selected' : '' }}>
+                                                {{ $category->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary">Update Product</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endforeach
+
 
 
     </div>
