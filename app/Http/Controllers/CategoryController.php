@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\models\Categories;
+use App\Models\Products;
 
 class CategoryController extends Controller
 {
@@ -25,5 +26,23 @@ class CategoryController extends Controller
         ]);
 
         return redirect()->back()->with('success', 'Category added successfully!');
+    }
+
+    public function destroy(Categories $category)
+    {
+
+        try {
+
+            $products = Products::where('category_id', $category->id)->get();
+            // dd(count($products) >0);
+            if (count($products) > 0) {
+                return redirect()->back()->with('error', 'Data category ini masih memiliki relasi pada data produk !');
+            } else {
+                $category->delete();
+                return redirect()->back()->with('success', 'Category deleted successfully!');
+            }
+        } catch (\Exception $error) {
+            return redirect()->back()->with('error', $error->getMessage());
+        }
     }
 }

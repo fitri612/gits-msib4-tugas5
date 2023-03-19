@@ -10,23 +10,11 @@ class ProductController extends Controller
 {
     public function index()
     {
+        $categories = Categories::all();
+        
+        $products = Products::with('category')->get();
 
-        $data['products'] = Products::with('categories')->get();
-        // $products = Products::with('categories')->get();
-        // dd($products)->toArray();
-        // $categories = Categories::all();
-
-        // return view('pages.product.index', compact('products', 'categories'));
-        dd($data['products']->toArray());
-        return view('pages.product.index', $data);
-    }
-
-    public function create()
-    {
-        // $categories = Categories::all();
-        // return view('pages.product.create', compact('categories'));
-        $data['categories'] = Categories::all();
-        return view('pages.product.create', $data);
+        return view('pages.product.index', compact('products', 'categories'));
     }
 
     public function store(Request $request)
@@ -34,6 +22,7 @@ class ProductController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'price' => 'required|numeric',
+            'stock' => 'required|string',
             'description' => 'required|string',
             'category_id' => 'required|exists:categories,id',
         ]);
@@ -41,6 +30,7 @@ class ProductController extends Controller
         Products::create([
             'name' => $request->name,
             'price' => $request->price,
+            'stock' => $request->stock,
             'description' => $request->description,
             'category_id' => $request->category_id,
         ]);
@@ -59,6 +49,7 @@ class ProductController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'price' => 'required|numeric',
+            'stock' => 'required|string',
             'description' => 'required|string',
             'category_id' => 'required|exists:categories,id',
         ]);
@@ -66,6 +57,7 @@ class ProductController extends Controller
         $product->update([
             'name' => $request->name,
             'price' => $request->price,
+            'stock' => $request->stock,
             'description' => $request->description,
             'category_id' => $request->category_id,
         ]);
@@ -77,5 +69,11 @@ class ProductController extends Controller
     {
         $product->delete();
         return redirect()->back()->with('success', 'Product deleted successfully!');
+    }
+
+    public function getProductsByCategory($category_id)
+    {
+        $products = Products::where('category_id', $category_id)->pluck('name', 'id');
+        return response()->json($products);
     }
 }

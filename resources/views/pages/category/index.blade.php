@@ -2,10 +2,23 @@
 
 @section('content')
     <div class="row">
+        {{-- Flask Message --}}
+        @if (session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        @if (session('error'))
+            <div class="alert alert-danger">
+                {{ session('error') }}
+            </div>
+        @endif
         <div class="col-md-12">
             <h1>Category</h1>
             <hr>
-            <button type="button" class="btn btn-primary mb-3" data-toggle="modal" data-target="#addCategoryModal">Add Category</button>
+            <button type="button" class="btn btn-primary mb-3" data-toggle="modal" data-target="#addCategoryModal">Add
+                Category</button>
             <table class="table">
                 <thead>
                     <tr>
@@ -20,12 +33,13 @@
                             <td>{{ $category->id }}</td>
                             <td>{{ $category->name }}</td>
                             <td>
-                                {{-- <a href="{{ route('category.edit', $category->id) }}" class="btn btn-primary">Edit</a>
-                                <form action="{{ route('category.destroy', $category->id) }}" method="POST" class="d-inline">
+                                <a href="" class="btn btn-primary">Edit</a>
+                                <form action="{{ route('category.destroy', $category->id) }}" method="POST"
+                                    class="d-inline">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-danger">Delete</button>
-                                </form> --}}
+                                </form>
                             </td>
                         </tr>
                     @endforeach
@@ -49,7 +63,8 @@
                         @csrf
                         <div class="form-group">
                             <label for="name">Category Name</label>
-                            <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="name" value="{{ old('name') }}" required>
+                            <input type="text" class="form-control @error('name') is-invalid @enderror" id="name"
+                                name="name" value="{{ old('name') }}" required>
                             @error('name')
                                 <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong>
