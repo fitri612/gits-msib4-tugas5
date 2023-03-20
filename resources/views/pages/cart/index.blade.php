@@ -139,7 +139,7 @@
                                     @csrf
                                     @method('PUT')
                                     <div class="modal-body">
-                                        <div class="form-group">
+                                        {{-- <div class="form-group">
                                             <label for="product_id">Product Name</label>
                                             <select class="form-control" id="product_id" name="product_id" required>
                                                 @foreach ($products as $product)
@@ -148,7 +148,7 @@
                                                         {{ $product->name }}</option>
                                                 @endforeach
                                             </select>
-                                        </div>
+                                        </div> --}}
                                         <div class="form-group">
                                             <label for="qty">Quantity</label>
                                             <input type="number" class="form-control" id="qty" name="qty"
