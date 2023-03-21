@@ -1,8 +1,6 @@
 @extends('layouts.default')
 @section('content')
-    <!-- Animated -->
     <div class="animated fadeIn">
-        <!-- Widgets  -->
         <div class="row">
             <div class="col-lg-6 col-md-6">
                 <div class="card">
@@ -141,14 +139,11 @@
                                         <div id="flotPie1" class="float-chart"></div>
                                     </div>
                                 </div>
-                            </div><!-- /.card -->
+                            </div>
                         </div>
                     </div>
-                </div> <!-- /.col-md-4 -->
+                </div> 
             </div>
         </div>
-        <!-- /.orders -->
-        <!-- /#add-category -->
     </div>
-    <!-- .animated -->
 @endsection
