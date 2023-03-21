@@ -22,28 +22,35 @@
                     <div class="card-header">
                         <h4 class="card-title">Products</h4>
                     </div>
-                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addProductModal">Add
-                        Product</button>
+                    <div class="d-flex justify-content-between mt-3 px-3">
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addProductModal">Add
+                            Product</button>
+                        <input type="text" id="searchInput" onkeyup="searchByName()" placeholder="Search by name...">
+                    </div>
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table class="table">
+                            <table class="table table-striped">
                                 <thead class=" text-primary">
-                                    <th>No</th>
-                                    <th>Name</th>
-                                    <th>Price</th>
-                                    <th>Stock</th>
-                                    <th>Deskripsi</th>
-                                    <th>Category</th>
-                                    <th>Action</th>
+                                    <th scope="col">No</th>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Price</th>
+                                    <th scope="col">Stock</th>
+                                    <th scope="col">Deskripsi</th>
+                                    <th scope="col">Category</th>
+                                    <th scope="col">Action</th>
                                 </thead>
                                 <tbody>
                                     @foreach ($products as $product)
-                                        <tr>
+                                        <tr scope="row">
                                             <td>{{ $loop->iteration }}</td>
                                             <td>{{ $product->name }}</td>
-                                            <td>{{ $product->price }}</td>
+                                            <td>
+                                                {{ 'Rp' . number_format($product->price, 2, ',', '.') }}
+                                            </td>
                                             <td>{{ $product->stock }}</td>
-                                            <td>{{ $product->description }}</td>
+                                            <td>
+                                                {{ Str::limit($product->description, 25) }}
+                                            </td>
                                             <td>{{ $product->category->name }}</td>
 
                                             <td>
@@ -199,4 +206,27 @@
 
 
     </div>
+    <script>
+        function searchByName() {
+            // deklarasi variable
+            var input, filter, table, tr, td, i, txtValue;
+            input = document.getElementById("searchInput");
+            filter = input.value.toUpperCase();
+            table = document.getElementsByTagName("table")[0];
+            tr = table.getElementsByTagName("tr");
+
+            // looping untuk menampilkan data
+            for (i = 0; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[1]; // index 1 is the name column
+                if (td) {
+                    txtValue = td.textContent || td.innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
+    </script>
 @endsection

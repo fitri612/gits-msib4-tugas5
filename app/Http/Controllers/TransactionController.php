@@ -44,7 +44,7 @@ class TransactionController extends Controller
 
         return redirect()->back()->with('success', 'Product Added to Cart!');
     }
-    
+
     public function editCart(Carts $cart)
     {
         $categories = Categories::all();
@@ -55,14 +55,13 @@ class TransactionController extends Controller
     public function updateCart(Request $request, Carts $cart)
     {
         $request->validate([
-            'product_id' => 'required',
             'qty' => 'required|numeric',
         ]);
 
         $data = $request->all();
 
         // Check Product Stock
-        $product = Products::findOrFail($request->product_id);
+        $product = $cart->product;
         if ($product->stock < $data['qty']) {
             return redirect()->back()->with('error', 'Out of stock product');
         }

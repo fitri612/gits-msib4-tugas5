@@ -52,13 +52,13 @@
                     <div class="card-body">
                         <div class="table-responsive">
                             <table class="table table-bordered">
-                                <thead class=" text-primary">
-                                    <th>No</th>
-                                    <th>Product Name</th>
-                                    <th>Price</th>
-                                    <th>Quantity</th>
-                                    <th>Subtotal</th>
-                                    <th>Action</th>
+                                <thead class="table-info">
+                                    <th scope="col">No</th>
+                                    <th scope="col">Product Name</th>
+                                    <th scope="col">Price</th>
+                                    <th scope="col">Quantity</th>
+                                    <th scope="col">Subtotal</th>
+                                    <th scope="col">Action</th>
                                 </thead>
                                 <tbody>
                                     @php
@@ -66,19 +66,18 @@
                                     @endphp
 
                                     @foreach ($carts as $cart)
-                                        <tr>
+                                        <tr scope="row">
                                             <td>{{ $loop->iteration }}</td>
                                             <td>{{ $cart->product->name }}</td>
-                                            <td>Rp. {{ number_format($cart->product->price) }}</td>
+                                            <td>Rp{{ number_format($cart->product->price, 2, ',', '.') }}</td>
                                             <td>{{ $cart->qty }}</td>
-                                            <td>Rp. {{ number_format($cart->product->price * $cart->qty) }}</td>
-
+                                            <td>Rp{{ number_format($cart->product->price * $cart->qty, 2, ',', '.') }}</td>
                                             <td>
                                                 <button class="btn btn-primary btn-sm" data-toggle="modal"
-                                                    style="margin-bottom: 5px;"
                                                     data-target="#editCartModal-{{ $cart->id }}">Edit</button>
 
-                                                <form action="{{ route('cart.destroy', $cart->id) }}" method="post">
+                                                <form action="{{ route('cart.destroy', $cart->id) }}" method="post"
+                                                    style="display: inline-block;">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button class="btn btn-danger btn-sm">Delete</button>
@@ -93,21 +92,23 @@
                                     @endforeach
 
 
-                                    <tr>
+                                    <tr class="table table-borderless">
                                         <td colspan="4" rowspan="4"></td>
                                         <td>Grand Total </td>
-                                        <td>: Rp. {{ number_format($total) }}</td>
+                                        <td>: Rp{{ number_format($total, 2, ',', '.') }}</td>
                                     </tr>
                                     <form action="{{ route('cart.checkout') }}" method="post">
                                         @csrf
-                                        <tr>
-                                            <td></td>
+                                        <tr class="table table-borderless">
+                                            <td>
+                                                <label for="cash">Cash(Rp)</label>
+                                            </td>
                                             <td>
                                                 <input type="number" class="form-control" id="cash" name="cash"
                                                     value="" placeholder="Cash" required>
                                             </td>
                                         </tr>
-                                        <tr>
+                                        <tr class="table table-borderless">
                                             <td></td>
                                             <td>
                                                 <button class="btn btn-primary btn-sm col-12" type="submit"
@@ -139,16 +140,6 @@
                                     @csrf
                                     @method('PUT')
                                     <div class="modal-body">
-                                        {{-- <div class="form-group">
-                                            <label for="product_id">Product Name</label>
-                                            <select class="form-control" id="product_id" name="product_id" required>
-                                                @foreach ($products as $product)
-                                                    <option value="{{ $product->id }}"
-                                                        {{ $cart->product_id == $product->id ? 'selected' : '' }}>
-                                                        {{ $product->name }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div> --}}
                                         <div class="form-group">
                                             <label for="qty">Quantity</label>
                                             <input type="number" class="form-control" id="qty" name="qty"

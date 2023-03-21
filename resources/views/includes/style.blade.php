@@ -58,4 +58,8 @@
     #cellPaiChart {
         height: 160px;
     }
+    .active {
+        background-color: #4CAF50;
+        color: white;
+    }
 </style>
